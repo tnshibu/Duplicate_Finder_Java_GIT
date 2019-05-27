@@ -6,11 +6,14 @@ import java.text.DecimalFormat;
     A Map with key=fileSize and value=list of filenames
 */
 public class DuplicateFinder {
-  private static SortedMap<Long,List<String>> fileMap = new TreeMap<Long,List<String>>(Collections.reverseOrder());
+  private static SortedMap<String,List<String>> fileMap = new TreeMap<String,List<String>>(Collections.reverseOrder());
   private static List<String> exclusionList = new ArrayList<String>();
   private static List<String> minimumFileSizeList = new ArrayList<String>();
   private static int minimumFileSize = 1000;
+  private static List<String> matchFileNamesList = new ArrayList<String>();
+  private static boolean matchFileNames = false;
   private static DecimalFormat decimalFormatter = new DecimalFormat("###,###,000");
+  private static boolean printMapFileSizes = false;
   /******************************************************************************************/
   public static void main(String[] args) throws Exception {
     String propertyFilePath = locatePropertiesFile();
@@ -19,7 +22,11 @@ public class DuplicateFinder {
     exclusionList = (List<String>)hm.get("EXCLUDE_PATH");
     minimumFileSizeList = (List<String>)hm.get("MINIMUM_FILE_SIZE");
     minimumFileSize = Integer.parseInt(minimumFileSizeList.get(0));
-      
+    matchFileNamesList = (List<String>)hm.get("ALSO_MATCH_FILE_NAMES");
+    if(matchFileNamesList.get(0).equalsIgnoreCase("Y")) {
+        matchFileNames = true;
+    }
+
     List<String> fileList = null;
     if((args != null) && (args.length > 0)) {
         fileList = loadFileLists(args);
@@ -42,27 +49,51 @@ public class DuplicateFinder {
         continue;
       }
 	  Long fileSizeLong = new Long(fileSize);
+      String fileNameOnly = (new File(fileName)).getName();
+      String mapKey = fileSizeLong+"";
+      if(matchFileNames == true) {
+          mapKey = fileSizeLong + "_" + fileNameOnly;
+      }
 
-      if(fileMap.containsKey(fileSizeLong)) {
-        fileMap.get(fileSizeLong).add(fileName);
+      if(fileMap.containsKey(mapKey)) {
+          fileMap.get(mapKey).add(fileName);
       } else {
         List<String> list = new ArrayList<String>();
         list.add(fileName);
-        fileMap.put(fileSizeLong, list);
+          fileMap.put(mapKey, list);
       }
     }
     
     System.out.println("REM fileList.size()="+fileList.size());
     System.out.println("REM loading to Map - end");
 
+    //--------------- print map sizes - start --------------------------------
+    if(printMapFileSizes) {
+        System.out.println("REM ------------Map sizes - start");
+        Set keys1 = fileMap.keySet();
+        Iterator<String> iter1 = keys1.iterator();
+        while(iter1.hasNext()) {
+          String key1  = iter1.next();
+
+          String fileToRetain1 = "";
+          List<String> sameSizedFileList1 = fileMap.get(key1);
+          if(sameSizedFileList1 == null) {
+            continue;
+          }
+          System.out.println("REM fileSize = "+key1+" ; sameSizedFileList.size()= " + sameSizedFileList1.size());
+        }
+        System.out.println("REM ------------Map sizes - end");
+    }
+    //--------------- print map sizes - end ----------------------------------
+    
 
     //display duplicate now
     //System.out.println("REM fileMap = "+fileMap);
     synchronized(fileMap) {  
         Set keys = fileMap.keySet();
-        Iterator<Long> iter = keys.iterator();
+        Iterator<String> iter = keys.iterator();
         while(iter.hasNext()) {
-          Long fileSizeLong  = iter.next();
+          String fileSizeLong  = iter.next();
 
           String fileToRetain = "";
           List<String> sameSizedFileList = fileMap.get(fileSizeLong);
@@ -74,7 +105,7 @@ public class DuplicateFinder {
           //System.out.println();
           //System.out.println();
           //System.out.println();
-          //System.out.println("REM fileSize = "+fileSize+" ; sameSizedFileList.size()= " + sameSizedFileList.size());
+          //System.out.println("REM fileSize = "+fileSizeLong+" ; sameSizedFileList.size()= " + sameSizedFileList.size());
 
           if(sameSizedFileList.size() >= 2) {
 			  Map<String, String> sameSizedFileMap = new HashMap<String, String>();
@@ -108,7 +139,8 @@ public class DuplicateFinder {
                     System.out.println();
                     System.out.println();
                     //System.out.println("REM : file size : "+decimalFormatter.format(fileSize));
-                    System.out.println("REM : file size : "+decimalFormatter.format(fileSizeLong));
+                    //System.out.println("REM : file size : "+decimalFormatter.format(fileSizeLong));
+                    System.out.println("REM : file size : "+fileSizeLong);
                     System.out.println("REM "+"\""+firstFile+"\"");
                     for(int j=1;j<identicalFileList.size();j++) {
                         //start from second file only
