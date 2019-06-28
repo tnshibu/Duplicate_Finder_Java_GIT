@@ -57,9 +57,9 @@ public class DuplicateFinder {
     	  mapKey = new MapKey(fileSize, null);
       }
     	  
-      System.out.println("mapKey="+mapKey);
-      System.out.println("mapKey.hash="+mapKey.hashCode());
-      System.out.println("fileMap="+fileMap);
+      //System.out.println("mapKey="+mapKey);
+      //System.out.println("mapKey.hash="+mapKey.hashCode());
+      //System.out.println("fileMap="+fileMap);
       if(fileMap.containsKey(mapKey)) {
           fileMap.get(mapKey).add(fileName);
       } else {
@@ -85,7 +85,7 @@ public class DuplicateFinder {
           if(sameSizedFileList1 == null) {
             continue;
           }
-          System.out.println("REM fileSize = "+key1+" ; sameSizedFileList.size()= " + sameSizedFileList1.size());
+          //System.out.println("REM fileSize = "+key1+" ; sameSizedFileList.size()= " + sameSizedFileList1.size());
         }
         System.out.println("REM ------------Map sizes - end");
     }
@@ -186,7 +186,7 @@ public class DuplicateFinder {
   }
   /******************************************************************************************/
     public static List<String> getFileListFromFolder(String sourcePath) {
-        System.out.println("REM "+sourcePath);
+        //System.out.println("REM "+sourcePath);
         if(sourcePath.endsWith("\\")) {
             sourcePath = sourcePath.substring(0,sourcePath.length()-1);
         }
