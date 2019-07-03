@@ -13,16 +13,22 @@ public class MapKey implements Comparable {
 	public int compareTo(Object mapKey ) {
 
 		MapKey obj = (MapKey) mapKey ;
-	    Long int1 = new Long(obj.fileSize);
+	    Long int1 = new Long(obj.getFileSize());
 	    Long int2 = new Long(this.getFileSize());
 	    
-		if(fileNameOnly == null) {
-			if(obj.getFileNameOnly() == null) {
-			    int retval =  int1.compareTo(int2);
-			    return retval;
-			}
-		}
-		return 0;
+		//if(this.getFileNameOnly() != null && obj.getFileNameOnly() != null) {
+        //    int retval =  this.getFileNameOnly().compareTo(obj.getFileNameOnly());
+        //    if(retval == 0 ) {
+        //        retval =  int1.compareTo(int2);
+        //        return retval;
+        //    }
+        //    return retval;
+		//}
+		//if(this.getFileNameOnly() == null || obj.getFileNameOnly() == null) {
+            int retval =  int1.compareTo(int2);
+            return retval;
+		//}
+		//return 0;
 	}
 
 	/******************************************************************************************/

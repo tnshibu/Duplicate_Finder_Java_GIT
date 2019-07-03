@@ -186,7 +186,7 @@ public class DuplicateFinder {
   }
   /******************************************************************************************/
     public static List<String> getFileListFromFolder(String sourcePath) {
-        System.out.println("REM "+sourcePath);
+        //System.out.println("REM "+sourcePath);
         if(sourcePath.endsWith("\\")) {
             sourcePath = sourcePath.substring(0,sourcePath.length()-1);
         }
